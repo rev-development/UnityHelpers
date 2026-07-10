@@ -1,0 +1,14 @@
+{
+  "name": "com.reverendcode.helpers",
+  "version": "1.0.0",
+  "displayName": "Rev Helpers",
+  "description": "Reusable utility library for Unity projects.",
+  "unity": "2022.3",
+  "unityRelease": "55f1",
+  "documentationUrl": "",
+  "changelogUrl": "",
+  "keywords": ["helpers", "utilities"],
+  "author": {
+    "name": "ReverendCode"
+  }
+}
