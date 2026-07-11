@@ -1,5 +1,5 @@
 {
-  "name": "com.reverendcode.helpers",
+  "name": "com.rev.helpers",
   "version": "1.0.0",
   "displayName": "Rev Helpers",
   "description": "Reusable utility library for Unity projects.",
@@ -7,10 +7,14 @@
   "unityRelease": "55f1",
   "documentationUrl": "",
   "changelogUrl": "",
-  "keywords": ["helpers", "utilities"],
+  "keywords": [
+    "helpers",
+    "utilities"
+  ],
   "author": {
     "name": "Rev",
     "email": "revg.development@gmail.com",
     "url": "https://github.com/rev-development"
-  }
+  },
+  "_fingerprint": "e15744a49f2982605159b8ce7d499fbd46d09cfd"
 }
