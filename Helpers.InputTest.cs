@@ -1,15 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Helpers
+namespace Rev.Helpers
 {
-    public class InputTest : MonoBehaviour
-    {
+	public class InputTest : MonoBehaviour
+	{
 
-        public static void Test(InputAction.CallbackContext ctx)
-        {
-            UnityEngine.Debug.Log(ctx);
-        }
+		public static void Test(InputAction.CallbackContext ctx) => UnityEngine.Debug.Log(ctx);
 
-    }
+	}
 }

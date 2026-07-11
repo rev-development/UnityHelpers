@@ -1,22 +1,21 @@
 using UnityEngine;
 
-namespace Helpers
+namespace Rev.Helpers
 {
-    public static class Shaders
-    {
+	public static class Shaders
+	{
 
-        public static void ChangeSimpleColor(Color color, GameObject gameObject)
-        {
-            if (!gameObject.TryGetComponent(out MeshRenderer meshRenderer))
-            {
-                return;
-            }
+		public static void ChangeSimpleColor(Color color, GameObject gameObject) {
+			if (!gameObject.TryGetComponent(out MeshRenderer meshRenderer))
+			{
+				return;
+			}
 
-            if (meshRenderer.material.shader.name == "SimpleColor")
-            {
-                meshRenderer.material.SetColor("_Color", color);
-            }
-        }
+			if (meshRenderer.material.shader.name == "SimpleColor")
+			{
+				meshRenderer.material.SetColor("_Color", color);
+			}
+		}
 
-    }
+	}
 }

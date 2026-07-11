@@ -7,17 +7,14 @@ using UnityEngine.UIElements;
 namespace Rev.Helpers.Editor
 {
 	[Serializable]
-	public class InfoGroup
+	public class SimpleLabel
 	{
 
 		[SerializeField] [DontCreateProperty] private string _value;
 
-		public GroupBox GroupBox;
-
 		public Label Label;
 
-		public InfoGroup(GroupBox groupBox, Label label) {
-			GroupBox = groupBox;
+		public SimpleLabel(Label label) {
 			Label = label;
 
 			if (Label == null) return;
@@ -32,20 +29,9 @@ namespace Rev.Helpers.Editor
 						bindingMode = BindingMode.ToTarget,
 					}
 				);
-
-			GroupBox.style.display = DisplayStyle.None;
 		}
 
-		[CreateProperty] public string Value
-		{
-			get => _value;
-			set
-			{
-				_value = value;
-
-				GroupBox.style.display = string.IsNullOrEmpty(_value) ? DisplayStyle.None : DisplayStyle.Flex;
-			}
-		}
+		[CreateProperty] public string Value { get => _value; set => _value = value; }
 
 		public void Unbind() => Label.Unbind();
 

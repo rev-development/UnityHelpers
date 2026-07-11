@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Helpers.Editor
+namespace Rev.Helpers.Editor
 {
 	[AttributeUsage(AttributeTargets.Field)]
 	public class DisableInEditorAttribute : PropertyAttribute
