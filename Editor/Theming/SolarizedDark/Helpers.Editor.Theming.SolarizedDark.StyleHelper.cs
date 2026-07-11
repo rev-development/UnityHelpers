@@ -5,92 +5,100 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Rev.Helpers.Editor.Theming.SolarizedDark
+namespace Helpers.Editor.Theming.SolarizedDark
 {
-	public static class StyleHelper
-	{
+    public static class StyleHelper
+    {
 
-		// ── USS class name constants ──────────────────────────────────────────
-		// Avoids magic strings throughout your tool code
+        // ── USS class name constants ──────────────────────────────────────────
+        // Avoids magic strings throughout your tool code
 
-		public const string ClassBackground = "sol-bg";
+        public const string ClassBackground = "sol-bg";
 
-		public const string ClassBgHighlight = "sol-bg-highlight";
+        public const string ClassBgHighlight = "sol-bg-highlight";
 
-		public const string ClassTextBody = "sol-text-body";
+        public const string ClassTextBody = "sol-text-body";
 
-		public const string ClassTextEmphasis = "sol-text-emphasis";
+        public const string ClassTextEmphasis = "sol-text-emphasis";
 
-		public const string ClassTextSecondary = "sol-text-secondary";
+        public const string ClassTextSecondary = "sol-text-secondary";
 
-		public const string ClassAccentBlue = "sol-accent-blue";
+        public const string ClassAccentBlue = "sol-accent-blue";
 
-		public const string ClassAccentCyan = "sol-accent-cyan";
+        public const string ClassAccentCyan = "sol-accent-cyan";
 
-		public const string ClassAccentYellow = "sol-accent-yellow";
+        public const string ClassAccentYellow = "sol-accent-yellow";
 
-		public const string ClassAccentGreen = "sol-accent-green";
+        public const string ClassAccentGreen = "sol-accent-green";
 
-		public const string ClassAccentRed = "sol-accent-red";
+        public const string ClassAccentRed = "sol-accent-red";
 
-		public const string ClassCard = "sol-card";
+        public const string ClassCard = "sol-card";
 
-		public const string ClassDivider = "sol-divider";
+        public const string ClassDivider = "sol-divider";
 
-		public const string ClassButton = "sol-button";
+        public const string ClassButton = "sol-button";
 
-		public const string ClassButtonPrimary = "sol-button-primary";
+        public const string ClassButtonPrimary = "sol-button-primary";
 
-		// ── RuntimeStyleSheet generation ─────────────────────────────────────
-		// Generates a StyleSheet from USS string at runtime — avoids needing
-		// a .uss asset on disk, useful for package/plugin distribution.
+        // ── RuntimeStyleSheet generation ─────────────────────────────────────
+        // Generates a StyleSheet from USS string at runtime — avoids needing
+        // a .uss asset on disk, useful for package/plugin distribution.
 
-		private static StyleSheet _cachedSheet;
+        private static StyleSheet _cachedSheet;
 
-		public static string USSPath = "Assets/Scripts/Helpers/Editor/Theming/SolarizedDark.uss";
-		// ── Inline style application ──────────────────────────────────────────
+        public static string USSPath = "Assets/Scripts/Helpers/Editor/Theming/SolarizedDark.uss";
+        // ── Inline style application ──────────────────────────────────────────
 
-		public static void ApplyBackground(VisualElement el, bool highlighted = false) =>
-			el.style.backgroundColor = ParseColor(highlighted ? Palette.Base02 : Palette.Base03);
+        public static void ApplyBackground(VisualElement el, bool highlighted = false) {
+            el.style.backgroundColor = ParseColor(highlighted ? Palette.Base02 : Palette.Base03);
+        }
 
-		public static void ApplyBodyText(VisualElement el, bool emphasized = false) =>
-			el.style.color = ParseColor(emphasized ? Palette.Base1 : Palette.Base0);
+        public static void ApplyBodyText(VisualElement el, bool emphasized = false) {
+            el.style.color = ParseColor(emphasized ? Palette.Base1 : Palette.Base0);
+        }
 
-		public static void ApplySecondaryText(VisualElement el) => el.style.color = ParseColor(Palette.Base01);
+        public static void ApplySecondaryText(VisualElement el) {
+            el.style.color = ParseColor(Palette.Base01);
+        }
 
-		public static void ApplyAccent(VisualElement el, string hexColor) => el.style.color = ParseColor(hexColor);
+        public static void ApplyAccent(VisualElement el, string hexColor) {
+            el.style.color = ParseColor(hexColor);
+        }
 
-		public static void ApplyBorder(VisualElement el, string hexColor = null, float width = 1f) {
-			var color = ParseColor(hexColor ?? Palette.Base01);
-			el.style.borderTopColor = color;
-			el.style.borderBottomColor = color;
-			el.style.borderLeftColor = color;
-			el.style.borderRightColor = color;
-			el.style.borderTopWidth = width;
-			el.style.borderBottomWidth = width;
-			el.style.borderLeftWidth = width;
-			el.style.borderRightWidth = width;
-		}
+        public static void ApplyBorder(VisualElement el, string hexColor = null, float width = 1f) {
+            var color = ParseColor(hexColor ?? Palette.Base01);
+            el.style.borderTopColor = color;
+            el.style.borderBottomColor = color;
+            el.style.borderLeftColor = color;
+            el.style.borderRightColor = color;
+            el.style.borderTopWidth = width;
+            el.style.borderBottomWidth = width;
+            el.style.borderLeftWidth = width;
+            el.style.borderRightWidth = width;
+        }
 
-		public static StyleSheet GetStyleSheet() {
-			if (_cachedSheet != null) return _cachedSheet;
+        public static StyleSheet GetStyleSheet() {
+            if (_cachedSheet != null) return _cachedSheet;
 
-			_cachedSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(USSPath);
+            _cachedSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(USSPath);
 
-			if (_cachedSheet == null)
-				UnityEngine.Debug.LogWarning(
-						"SolarizedDark.uss not found — run Tools/Theming/Generate Solarized Dark USS"
-					);
+            if (_cachedSheet == null)
+                UnityEngine.Debug.LogWarning(
+                        "SolarizedDark.uss not found — run Tools/Theming/Generate Solarized Dark USS"
+                    );
 
-			return _cachedSheet;
-		}
+            return _cachedSheet;
+        }
 
-		public static void ApplyTo(VisualElement root) => root.styleSheets.Add(GetStyleSheet());
+        public static void ApplyTo(VisualElement root) {
+            root.styleSheets.Add(GetStyleSheet());
+        }
 
-		// ── USS string builder ────────────────────────────────────────────────
+        // ── USS string builder ────────────────────────────────────────────────
 
-		private static string BuildUSS() =>
-			$@"
+        private static string BuildUSS() {
+            return $@"
             .{ClassBackground} {{
                 background-color: {Palette.Base03};
             }}
@@ -175,36 +183,37 @@ namespace Rev.Helpers.Editor.Theming.SolarizedDark
                 background-color: {Palette.Cyan};
             }}
         ";
+        }
 
-		// ── Utility ───────────────────────────────────────────────────────────
+        // ── Utility ───────────────────────────────────────────────────────────
 
-		public static Color ParseColor(string hex) {
-			ColorUtility.TryParseHtmlString(hex, out var color);
+        public static Color ParseColor(string hex) {
+            ColorUtility.TryParseHtmlString(hex, out var color);
 
-			return color;
-		}
+            return color;
+        }
 
-		[MenuItem("Tools/Helpers/Theming/Generate Solarized Dark USS")]
-		public static void GenerateUSSFile() {
-			var path = USSPath;
-			var directory = Path.GetDirectoryName(path);
+        [MenuItem("Tools/Helpers/Theming/Generate Solarized Dark USS")]
+        public static void GenerateUSSFile() {
+            var path = USSPath;
+            var directory = Path.GetDirectoryName(path);
 
-			if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+            if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
 
-			File.WriteAllText(path, BuildUSS());
+            File.WriteAllText(path, BuildUSS());
 
-			// Tell Unity to pick it up
-			AssetDatabase.ImportAsset(path);
-			AssetDatabase.Refresh();
+            // Tell Unity to pick it up
+            AssetDatabase.ImportAsset(path);
+            AssetDatabase.Refresh();
 
-			UnityEngine.Debug.Log($"USS written to {path}");
-		}
+            UnityEngine.Debug.Log($"USS written to {path}");
+        }
 
-		private static StyleSheet StyleSheetFromUSS(string uss) {
-			var sheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(USSPath);
+        private static StyleSheet StyleSheetFromUSS(string uss) {
+            var sheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(USSPath);
 
-			return sheet;
-		}
+            return sheet;
+        }
 
-	}
+    }
 }

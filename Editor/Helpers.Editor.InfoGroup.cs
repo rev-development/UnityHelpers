@@ -1,53 +1,32 @@
-using System;
 using Unity.Properties;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Rev.Helpers.Editor
+namespace Helpers.Editor
 {
-	[Serializable]
 	public class InfoGroup
 	{
 
-		[SerializeField] [DontCreateProperty] private string _value;
+		[SerializeField] [DontCreateProperty] private string _val;
 
-		public GroupBox GroupBox;
+		public Label ValLabel;
 
-		public Label Label;
+		public InfoGroup(Label label) {
+			ValLabel = label;
 
-		public InfoGroup(GroupBox groupBox, Label label) {
-			GroupBox = groupBox;
-			Label = label;
+			ValLabel.dataSource = this;
 
-			if (Label == null) return;
-
-			Label.dataSource = this;
-
-			Label.SetBinding(
+			ValLabel?.SetBinding(
 					"text",
 					new DataBinding
 					{
-						dataSourcePath = new PropertyPath(nameof(Value)),
+						dataSourcePath = new PropertyPath(nameof(Val)),
 						bindingMode = BindingMode.ToTarget,
 					}
 				);
-
-			GroupBox.style.display = DisplayStyle.None;
 		}
 
-		[CreateProperty] public string Value
-		{
-			get => _value;
-			set
-			{
-				_value = value;
-
-				GroupBox.style.display = string.IsNullOrEmpty(_value) ? DisplayStyle.None : DisplayStyle.Flex;
-			}
-		}
-
-		public void Unbind() => Label.Unbind();
+		[CreateProperty] public string Val { get => _val; set => _val = value; }
 
 	}
 }

@@ -1,13 +1,16 @@
 using UnityEngine;
 
-namespace Rev.Helpers
+namespace Helpers
 {
-	public class NavBeacon : MonoBehaviour
-	{
+    public class NavBeacon : MonoBehaviour
+    {
 
-		public global::Helpers.Events.Channels.GameObjectEC NavBeaconEC;
+        public Events.Channels.GameObjectEC NavBeaconEC;
 
-		private void Awake() => NavBeaconEC.RaiseEvent(gameObject);
+        private void Awake()
+        {
+            NavBeaconEC.RaiseEvent(gameObject);
+        }
 
-	}
+    }
 }

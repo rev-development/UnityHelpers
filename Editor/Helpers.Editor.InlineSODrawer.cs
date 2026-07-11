@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
-namespace Rev.Helpers.Editor
+namespace Helpers.Editor
 {
 	[CustomPropertyDrawer(typeof(InlineSOAttribute))]
 	public class InlineSODrawer : PropertyDrawer

@@ -1,18 +1,18 @@
-namespace Rev.Helpers
+namespace Helpers
 {
-	public static class Enums
-	{
+    public static class Enums
+    {
 
-		public enum LeftRightNeither
-		{
+        public enum LeftRightNeither
+        {
 
-			Neither = 0,
+            Neither = 0,
 
-			Left = -1,
+            Left = -1,
 
-			Right = 1,
+            Right = 1
 
-		}
+        }
 
-	}
+    }
 }

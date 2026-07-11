@@ -1,36 +1,33 @@
 using UnityEditor;
 
-namespace Rev.Helpers.Editor
+[CustomEditor(typeof(Helpers.ScenePicker), true)]
+public class ScenePickerEditor : UnityEditor.Editor
 {
-	[CustomEditor(typeof(ScenePicker), true)]
-	public class ScenePickerEditor : UnityEditor.Editor
-	{
 
-		public override void OnInspectorGUI() {
-			var picker = target as ScenePicker;
+    public override void OnInspectorGUI()
+    {
+        var picker = target as Helpers.ScenePicker;
+        var oldScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(picker.ScenePath);
 
-			var oldScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(picker?.ScenePath);
+        serializedObject.Update();
 
-			serializedObject.Update();
+        EditorGUI.BeginChangeCheck();
 
-			EditorGUI.BeginChangeCheck();
+        var newScene = EditorGUILayout.ObjectField(
+                "scene",
+                oldScene,
+                typeof(SceneAsset),
+                false
+            ) as SceneAsset;
 
-			var newScene = EditorGUILayout.ObjectField(
-					"scene",
-					oldScene,
-					typeof(SceneAsset),
-					false
-				) as SceneAsset;
+        if (EditorGUI.EndChangeCheck())
+        {
+            string newPath = AssetDatabase.GetAssetPath(newScene);
+            var scenePathProperty = serializedObject.FindProperty("ScenePath");
+            scenePathProperty.stringValue = newPath;
+        }
 
-			if (EditorGUI.EndChangeCheck())
-			{
-				var newPath = AssetDatabase.GetAssetPath(newScene);
-				var scenePathProperty = serializedObject.FindProperty("ScenePath");
-				scenePathProperty.stringValue = newPath;
-			}
+        serializedObject.ApplyModifiedProperties();
+    }
 
-			serializedObject.ApplyModifiedProperties();
-		}
-
-	}
 }

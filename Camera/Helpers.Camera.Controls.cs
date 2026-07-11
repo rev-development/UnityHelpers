@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Rev.Helpers.Camera
+namespace Helpers.Camera
 {
 	[AddComponentMenu("Helpers.Camera.Controls")]
 	public class Controls : MonoBehaviour
@@ -18,9 +18,9 @@ namespace Rev.Helpers.Camera
 
 		public UnityEvent RightClickStarted = new();
 
-		private DefaultControls.CameraActions _actions;
+		private Helpers.Camera.DefaultControls.CameraActions _actions;
 
-		private DefaultControls _defaultControls;
+		private Helpers.Camera.DefaultControls _defaultControls;
 
 		private bool _isRotating;
 

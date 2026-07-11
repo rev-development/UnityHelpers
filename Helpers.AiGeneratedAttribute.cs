@@ -1,6 +1,6 @@
 using System;
 
-namespace Rev.Helpers
+namespace Helpers
 {
 	/// <summary>
 	///     Marks a class, struct, or method as written (fully or partially) by an AI tool.
