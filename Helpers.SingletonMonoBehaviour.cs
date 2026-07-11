@@ -1,25 +1,24 @@
 using UnityEngine;
 
-namespace Helpers
+namespace Rev.Helpers
 {
-    public abstract class SingletonMonoBehaviour<TImplementingClassName> : MonoBehaviour
-        where TImplementingClassName : MonoBehaviour
-    {
+	public abstract class SingletonMonoBehaviour<TImplementingClassName> : MonoBehaviour
+		where TImplementingClassName : MonoBehaviour
+	{
 
-        public static TImplementingClassName Instance { get; private set; }
+		public static TImplementingClassName Instance { get; private set; }
 
-        protected virtual void Awake()
-        {
-            if (Instance != null
-                && Instance != this)
-            {
-                Destroy(gameObject);
+		protected virtual void Awake() {
+			if (Instance != null
+				&& Instance != this)
+			{
+				Destroy(gameObject);
 
-                return;
-            }
+				return;
+			}
 
-            Instance = this as TImplementingClassName;
-        }
+			Instance = this as TImplementingClassName;
+		}
 
-    }
+	}
 }
