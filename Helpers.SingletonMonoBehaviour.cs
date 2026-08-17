@@ -1,14 +1,14 @@
 using UnityEngine;
 
-namespace Rev.Helpers
+namespace Helpers
 {
 	public abstract class SingletonMonoBehaviour<TImplementingClassName> : MonoBehaviour
 		where TImplementingClassName : MonoBehaviour
 	{
-
 		public static TImplementingClassName Instance { get; private set; }
 
-		protected virtual void Awake() {
+		protected virtual void Awake()
+		{
 			if (Instance != null
 				&& Instance != this)
 			{
@@ -19,6 +19,5 @@ namespace Rev.Helpers
 
 			Instance = this as TImplementingClassName;
 		}
-
 	}
 }

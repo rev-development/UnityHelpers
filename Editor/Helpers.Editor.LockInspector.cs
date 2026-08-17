@@ -1,15 +1,12 @@
 using UnityEditor;
 
-namespace Rev.Helpers.Editor
+// ReSharper disable once CheckNamespace
+internal static class EditorMenus
 {
-	public static class EditorMenus
+	[MenuItem("Tools/Helpers/Toggle Inspector Lock %l")]
+	private static void ToggleInspectorLock()
 	{
-
-		[MenuItem("Tools/Helpers/Toggle Inspector Lock %l")]
-		private static void ToggleInspectorLock() {
-			ActiveEditorTracker.sharedTracker.isLocked = !ActiveEditorTracker.sharedTracker.isLocked;
-			ActiveEditorTracker.sharedTracker.ForceRebuild();
-		}
-
+		ActiveEditorTracker.sharedTracker.isLocked = !ActiveEditorTracker.sharedTracker.isLocked;
+		ActiveEditorTracker.sharedTracker.ForceRebuild();
 	}
 }

@@ -1,35 +1,34 @@
 // Editor/Tools/FolderNavigatorData.cs
 
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Rev.Helpers.Editor.Tools.FolderNav
+namespace Helpers.Editor.Tools.FolderNav
 {
-	[System.Serializable]
+	[Serializable]
 	public class FolderEntry
 	{
-
 		public string Label;
 
 		public string Path;
-
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public class FolderEntryList
 	{
-
 		public List<FolderEntry> Entries = new();
-
 	}
 
 	public static class FolderNavigatorData
 	{
-
 		private const string PrefsKey = "MyStudio.FolderNavigator.Folders";
 
-		public static List<FolderEntry> Load() {
+		public static void Reset() => EditorPrefs.DeleteKey(PrefsKey);
+
+		public static List<FolderEntry> Load()
+		{
 			var json = EditorPrefs.GetString(PrefsKey, null);
 
 			if (string.IsNullOrEmpty(json)) return Defaults();
@@ -37,75 +36,73 @@ namespace Rev.Helpers.Editor.Tools.FolderNav
 			return JsonUtility.FromJson<FolderEntryList>(json)?.Entries ?? Defaults();
 		}
 
-		public static void Save(List<FolderEntry> entries) {
+		public static void Save(List<FolderEntry> entries)
+		{
 			var json = JsonUtility.ToJson(
-					new FolderEntryList
-					{
-						Entries = entries,
-					}
-				);
+				new FolderEntryList
+				{
+					Entries = entries,
+				}
+			);
 
 			EditorPrefs.SetString(PrefsKey, json);
 		}
 
-		public static void Reset() => EditorPrefs.DeleteKey(PrefsKey);
-
 		private static List<FolderEntry> Defaults() =>
 			new()
 			{
-				new()
+				new FolderEntry
 				{
 					Label = "Scripts",
 					Path = "Assets/Scripts",
 				},
-				new()
+				new FolderEntry
 				{
 					Label = "Editor",
 					Path = "Assets/Editor",
 				},
-				new()
+				new FolderEntry
 				{
 					Label = "Prefabs",
 					Path = "Assets/Prefabs",
 				},
-				new()
+				new FolderEntry
 				{
 					Label = "Scenes",
 					Path = "Assets/Scenes",
 				},
-				new()
+				new FolderEntry
 				{
 					Label = "ScriptableObjects",
 					Path = "Assets/ScriptableObjects",
 				},
-				new()
+				new FolderEntry
 				{
 					Label = "Animations",
 					Path = "Assets/Animations",
 				},
-				new()
+				new FolderEntry
 				{
 					Label = "Audio",
 					Path = "Assets/Audio",
 				},
-				new()
+				new FolderEntry
 				{
 					Label = "Controls",
 					Path = "Assets/Controls",
 				},
 
-				new()
+				new FolderEntry
 				{
 					Label = "Models",
 					Path = "Assets/Models",
 				},
 
-				new()
+				new FolderEntry
 				{
 					Label = "Shaders",
 					Path = "Assets/Shaders",
 				},
 			};
-
 	}
 }

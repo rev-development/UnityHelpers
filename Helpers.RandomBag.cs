@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Helpers.Attributes;
+using UnityEngine;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
-namespace Rev.Helpers
+namespace Helpers
 {
 	/// <summary>
 	///     Holds a list of elements and hands out random elements one at a time without
@@ -13,19 +17,26 @@ namespace Rev.Helpers
 	[AiGenerated("Claude", "Sonnet 4.6")]
 	public class RandomBag<T>
 	{
+		public const string NotInitializedMessage = "RandomBag.Next called before Init().";
+
+		public const string InitializedMessage = "RandomBag Initialized";
 
 		public bool AutoRefillOnExhaustion = true;
 
-		private List<T> _bag;
+		[field: SerializeField] public List<T> Bag { get; protected set; }
 
-		private List<T> _source;
+		[field: SerializeField] public List<T> Source { get; protected set; }
 
-		public RandomBag() {
-		}
+		public bool Verbose = false;
+
+		public RandomBag()
+		{ }
 
 		public RandomBag(IEnumerable<T> source) => Init(source);
 
-		public int RemainingCount => _bag.Count;
+		public int RemainingCount => Bag.Count;
+
+		public bool HasItems => Bag.Count > 0;
 
 		public bool IsInitialized { get; private set; }
 
@@ -34,14 +45,18 @@ namespace Rev.Helpers
 		///     when using the parameterless constructor. Safe to call again later to swap
 		///     the pool at runtime (e.g. unlocking new variants).
 		/// </summary>
-		public void Init(IEnumerable<T> source) {
-			_source = new List<T>(source);
-			_bag = new List<T>();
+		public void Init(IEnumerable<T> source)
+		{
+			Source = new List<T>(source);
+			Bag = new List<T>();
 			IsInitialized = true;
 			Refill();
+
+			if (Verbose) Debug.Log(InitializedMessage);
 		}
 
-		public T Next() {
+		public T Next()
+		{
 			TryNext(out var result);
 
 			return result;
@@ -53,35 +68,36 @@ namespace Rev.Helpers
 		///     default(T) — which is indistinguishable from a real 0/false/struct(0) for
 		///     value types. Prefer this over Next() whenever T might be a value type.
 		/// </summary>
-		public bool TryNext(out T result) {
+		public bool TryNext(out T result)
+		{
 			if (!IsInitialized)
 			{
-				UnityEngine.Debug.LogError("RandomBag.Next/TryNext called before Init(). Call Init(source) first.");
+				Debug.LogWarning(NotInitializedMessage);
 				result = default;
 
 				return false;
 			}
 
-			if (_source.Count == 0)
+			if (Source.Count == 0)
 			{
-				UnityEngine.Debug.LogError("RandomBag has no source elements to choose from.");
+				Debug.LogWarning("RandomBag has no source elements to choose from.");
 				result = default;
 
 				return false;
 			}
 
 			var attempts = 0;
-			var maxAttempts = _source.Count;
+			var maxAttempts = Source.Count;
 
 			while (attempts < maxAttempts)
 			{
 				attempts++;
 
-				if (_bag.Count == 0)
+				if (Bag.Count == 0)
 				{
 					if (!AutoRefillOnExhaustion)
 					{
-						UnityEngine.Debug.LogWarning("RandomBag is exhausted and AutoRefillOnExhaustion is false.");
+						Debug.LogWarning("RandomBag is exhausted and AutoRefillOnExhaustion is false.");
 						result = default;
 
 						return false;
@@ -90,9 +106,9 @@ namespace Rev.Helpers
 					Refill();
 				}
 
-				var lastIndex = _bag.Count - 1;
-				var candidate = _bag[lastIndex];
-				_bag.RemoveAt(lastIndex);
+				var lastIndex = Bag.Count - 1;
+				var candidate = Bag[lastIndex];
+				Bag.RemoveAt(lastIndex);
 
 				if (IsValid(candidate))
 				{
@@ -101,14 +117,12 @@ namespace Rev.Helpers
 					return true;
 				}
 
-				UnityEngine.Debug.LogWarning(
-						"RandomBag skipped a destroyed/null entry. Consider calling RemoveItem to clean it up."
-					);
+				Debug.LogWarning("RandomBag skipped a destroyed/null entry. Consider calling RemoveItem to clean it up.");
 
-				_source.Remove(candidate);
+				Source.Remove(candidate);
 			}
 
-			UnityEngine.Debug.LogError("RandomBag has no valid (non-destroyed) elements left to choose from.");
+			Debug.LogWarning("RandomBag has no valid (non-destroyed) elements left to choose from.");
 			result = default;
 
 			return false;
@@ -119,11 +133,13 @@ namespace Rev.Helpers
 		///     C# reference is still non-null but should be treated as gone. Plain
 		///     reference types use standard null checks; value types are always valid.
 		/// </summary>
-		private static bool IsValid(T item) {
-			if (item is UnityEngine.Object unityObject) return unityObject != null;
+		private static bool IsValid(T item)
+		{
+			if (item is Object unityObject) return unityObject != null;
 
 			if (typeof(T).IsValueType) return true;
 
+#pragma warning disable S2955 // Generic parameters not constrained to reference types should not be compared to null
 			return item != null;
 		}
 
@@ -132,16 +148,17 @@ namespace Rev.Helpers
 		///     drawable in the current cycle (added to the live bag), not just on
 		///     the next reshuffle.
 		/// </summary>
-		public void AddItem(T item) {
+		public void AddItem(T item)
+		{
 			if (!IsInitialized)
 			{
-				UnityEngine.Debug.LogError("RandomBag.AddItem called before Init(). Call Init(source) first.");
+				Debug.LogError("RandomBag.AddItem called before Init(). Call Init(source) first.");
 
 				return;
 			}
 
-			_source.Add(item);
-			_bag.Add(item);
+			Source.Add(item);
+			Bag.Add(item);
 		}
 
 		/// <summary>
@@ -150,40 +167,42 @@ namespace Rev.Helpers
 		///     matching item was found — this is treated as a caller mistake, not
 		///     a hard error.
 		/// </summary>
-		public bool RemoveItem(T item) {
+		public bool RemoveItem(T item)
+		{
 			if (!IsInitialized)
 			{
-				UnityEngine.Debug.LogError("RandomBag.RemoveItem called before Init(). Call Init(source) first.");
+				Debug.LogError("RandomBag.RemoveItem called before Init(). Call Init(source) first.");
 
 				return false;
 			}
 
-			var removedFromSource = _source.Remove(item);
+			var removedFromSource = Source.Remove(item);
 
 			if (!removedFromSource)
 			{
-				UnityEngine.Debug.LogWarning("RandomBag.RemoveItem could not find a matching item in the source pool.");
+				Debug.LogWarning("RandomBag.RemoveItem could not find a matching item in the source pool.");
 
 				return false;
 			}
 
-			_bag.Remove(item);
+			Bag.Remove(item);
 
 			return true;
 		}
 
-		public void Refill() {
-			_bag = new List<T>(_source);
-			Shuffle(_bag);
+		public void Refill()
+		{
+			Bag = new List<T>(Source);
+			Shuffle(Bag);
 		}
 
-		private static void Shuffle(List<T> list) {
+		private static void Shuffle(List<T> list)
+		{
 			for (var i = list.Count - 1; i > 0; i--)
 			{
-				var j = UnityEngine.Random.Range(0, i + 1);
+				var j = Random.Range(0, i + 1);
 				(list[i], list[j]) = (list[j], list[i]);
 			}
 		}
-
 	}
 }

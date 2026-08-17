@@ -1,12 +1,10 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Rev.Helpers
+namespace Helpers
 {
 	public class InputTest : MonoBehaviour
 	{
-
 		public static void Test(InputAction.CallbackContext ctx) => UnityEngine.Debug.Log(ctx);
-
 	}
 }

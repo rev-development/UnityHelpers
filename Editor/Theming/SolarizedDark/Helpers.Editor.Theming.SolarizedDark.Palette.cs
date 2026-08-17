@@ -1,10 +1,9 @@
 // Editor/Theming/SolarizedDark.cs
 
-namespace Rev.Helpers.Editor.Theming.SolarizedDark
+namespace Helpers.Editor.Theming.SolarizedDark
 {
 	public static class Palette
 	{
-
 		// Background tones
 		public const string Base03 = "#002B36"; // main background
 
@@ -39,6 +38,5 @@ namespace Rev.Helpers.Editor.Theming.SolarizedDark
 		public const string Cyan = "#2AA198";
 
 		public const string Green = "#859900";
-
 	}
 }

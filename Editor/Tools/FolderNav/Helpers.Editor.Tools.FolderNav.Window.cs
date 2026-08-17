@@ -1,78 +1,79 @@
 using System.Collections.Generic;
-using Rev.Helpers.Editor.Extensions;
-using Rev.Helpers.Editor.Theming.SolarizedDark;
+using System.Reflection;
+using Helpers.Attributes;
+using Helpers.Editor.Ext;
+using Helpers.Editor.Theming.SolarizedDark;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.UIElements.Cursor;
 
-namespace Rev.Helpers.Editor.Tools.FolderNav
+namespace Helpers.Editor.Tools.FolderNav
 {
+	[AiGenerated("Claude", "Sonnet 4.6")]
 	public class Window : EditorWindow
 	{
-
 		private bool _editMode;
 
 		private List<FolderEntry> _folders;
 
 		private VisualElement _listContainer;
 
-		public void CreateGUI() {
+		public void CreateGUI()
+		{
 			_folders ??= FolderNavigatorData.Load();
 
-			var root = UIToolkitWrapper.SolRoot();
-			Style.SetAllPadding(root, 8);
+			var root = Ele.SolRoot();
+			root.style.SetPadding(8);
 
 			root.Add(BuildHeader());
-			root.Add(UIToolkitWrapper.SolDivider());
+			root.Add(Ele.SolDivider());
 
 			_listContainer = new VisualElement();
 			root.Add(_listContainer);
 
-			root.Add(UIToolkitWrapper.SolDivider());
+			root.Add(Ele.SolDivider());
 			root.Add(BuildAddRow());
 
 			RefreshList();
 			rootVisualElement.Add(root);
 		}
 
-		[MenuItem("Tools/Helpers/Folder Navigator %#f")]
-		public static void Open() => GetWindow<Window>("Folders");
+		[MenuItem("Tools/Helpers/Folder Navigator %#f")] public static void Open() => GetWindow<Window>("Folders");
 
 		// ── Header ────────────────────────────────────────────────────────────
 
-		private VisualElement BuildHeader() {
-			var editButton = UIToolkitWrapper.SolButton(_editMode ? "Done" : "Edit", ToggleEditMode);
+		private VisualElement BuildHeader()
+		{
+			var editButton = Ele.SolButton(_ => ToggleEditMode(), _editMode ? "Done" : "Edit");
 
-			var resetButton = UIToolkitWrapper.SolButton(
-					"Reset",
-					() =>
+			var resetButton = Ele.SolButton(
+				_ =>
+				{
+					if (EditorUtility.DisplayDialog(
+							"Reset Folders",
+							"Restore default folders? This cannot be undone.",
+							"Reset",
+							"Cancel"
+						))
 					{
-						if (EditorUtility.DisplayDialog(
-									"Reset Folders",
-									"Restore default folders? This cannot be undone.",
-									"Reset",
-									"Cancel"
-								))
-						{
-							FolderNavigatorData.Reset();
-							_folders = FolderNavigatorData.Load();
-							RefreshList();
-						}
+						FolderNavigatorData.Reset();
+						_folders = FolderNavigatorData.Load();
+						RefreshList();
 					}
-				);
+				},
+				"Reset"
+			);
 
-			return UIToolkitWrapper.SolRow()
-								   .WithChildren(
-											UIToolkitWrapper.SolLabel("Quick Nav", true),
-											UIToolkitWrapper.SolRow().WithChildren(editButton, resetButton)
-										)
-								   .WithStyle(r => r.justifyContent = Justify.SpaceBetween);
+			return Ele.SolRow()
+					  .WithChildren(Ele.SolLabel("Quick Nav"), Ele.SolRow().WithChildren(editButton, resetButton))
+					  .WithStyle(r => r.justifyContent = Justify.SpaceBetween);
 		}
 
 		// ── Folder list ───────────────────────────────────────────────────────
 
-		private void RefreshList() {
+		private void RefreshList()
+		{
 			_listContainer.Clear();
 
 			for (var i = 0; i < _folders.Count; i++)
@@ -83,45 +84,41 @@ namespace Rev.Helpers.Editor.Tools.FolderNav
 			}
 		}
 
-		private VisualElement BuildNavRow(int index) {
+		private VisualElement BuildNavRow(int index)
+		{
 			var entry = _folders[index];
 			var exists = AssetDatabase.IsValidFolder(entry.Path);
 
-			var label = UIToolkitWrapper.SolLabel(entry.Label)
-										.WithClass(exists ? StyleHelper.ClassTextBody : StyleHelper.ClassAccentRed);
+			var label = Ele.SolLabel(entry.Label).WithClass(exists ? StyleHelper.TextBase1 : StyleHelper.TextRed);
 
-			var row = UIToolkitWrapper.SolRow()
-									  .WithChildren(label)
-									  .WithStyle(r =>
-											   {
-												   r.paddingTop = 4;
-												   r.paddingBottom = 4;
-												   r.paddingLeft = 6;
-												   r.paddingRight = 6;
-											   }
-										   );
+			var row = Ele.SolRow()
+						 .WithChildren(label)
+						 .WithStyle(r =>
+							  {
+								  r.paddingTop = 4;
+								  r.paddingBottom = 4;
+								  r.paddingLeft = 6;
+								  r.paddingRight = 6;
+							  }
+						  );
 
-			Style.SetAllBorderRadius(row, 3);
+			row.style.SetBorderRadius(3);
 
 			if (exists)
 			{
 				row.RegisterCallback<ClickEvent>(_ => SelectFolder(entry.Path));
 
-				row.RegisterCallback<MouseEnterEvent>(_ =>
-						row.style.backgroundColor = StyleHelper.ParseColor(Palette.Base02)
-					);
+				row.RegisterCallback<MouseEnterEvent>(_ => row.style.backgroundColor = Palette.Base02.ToColor());
 
-				row.RegisterCallback<MouseLeaveEvent>(_ =>
-						row.style.backgroundColor = StyleHelper.ParseColor(Palette.Base03)
-					);
+				row.RegisterCallback<MouseLeaveEvent>(_ => row.style.backgroundColor = Palette.Base03.ToColor());
 
 				row.style.cursor = new StyleCursor(
-						new Cursor
-						{
-							texture = null,
-							hotspot = Vector2.zero,
-						}
-					);
+					new Cursor
+					{
+						texture = null,
+						hotspot = Vector2.zero,
+					}
+				);
 			}
 			else
 			{
@@ -165,185 +162,196 @@ namespace Rev.Helpers.Editor.Tools.FolderNav
 		//                        );
 		// }
 
-		private VisualElement BuildEditRow(int index) {
+		private VisualElement BuildEditRow(int index)
+		{
 			var entry = _folders[index];
 
 			var labelField = new TextField
-							 {
-								 value = entry.Label,
-							 };
-
-			labelField.style.width = 100;
+			{
+				value = entry.Label,
+				style =
+				{
+					width = 100,
+				},
+			};
 
 			labelField.RegisterValueChangedCallback(e =>
-					{
-						_folders[index].Label = e.newValue;
-						FolderNavigatorData.Save(_folders);
-					}
-				);
+				{
+					_folders[index].Label = e.newValue;
+					FolderNavigatorData.Save(_folders);
+				}
+			);
 
 			var pathField = new TextField
-							{
-								value = entry.Path,
-							};
-
-			pathField.style.flexGrow = 1;
-			pathField.style.flexShrink = 1;
-			pathField.style.minWidth = 0;
+			{
+				value = entry.Path,
+				style =
+				{
+					flexGrow = 1,
+					flexShrink = 1,
+					minWidth = 0,
+				},
+			};
 
 			pathField.RegisterValueChangedCallback(e =>
-					{
-						_folders[index].Path = e.newValue;
-						FolderNavigatorData.Save(_folders);
-					}
-				);
+				{
+					_folders[index].Path = e.newValue;
+					FolderNavigatorData.Save(_folders);
+				}
+			);
 
 			// Let the user drag a folder asset onto the path field
 			pathField.RegisterCallback<DragUpdatedEvent>(_ => DragAndDrop.visualMode = DragAndDropVisualMode.Generic);
 
 			pathField.RegisterCallback<DragPerformEvent>(_ =>
-					{
-						if (DragAndDrop.paths.Length <= 0) return;
+				{
+					if (DragAndDrop.paths.Length <= 0) return;
 
-						pathField.value = DragAndDrop.paths[0];
-						_folders[index].Path = DragAndDrop.paths[0];
-						FolderNavigatorData.Save(_folders);
-					}
-				);
+					pathField.value = DragAndDrop.paths[0];
+					_folders[index].Path = DragAndDrop.paths[0];
+					FolderNavigatorData.Save(_folders);
+				}
+			);
 
-			var moveUpButton = UIToolkitWrapper.SolButton(
-					"↑",
-					() =>
-					{
-						if (index <= 0) return;
+			var moveUpButton = Ele.SolButton(
+				_ =>
+				{
+					if (index <= 0) return;
 
-						(_folders[index], _folders[index - 1]) = (_folders[index - 1], _folders[index]);
-						FolderNavigatorData.Save(_folders);
-						RefreshList();
-					}
-				);
+					(_folders[index], _folders[index - 1]) = (_folders[index - 1], _folders[index]);
+					FolderNavigatorData.Save(_folders);
+					RefreshList();
+				},
+				"↑"
+			);
 
-			var moveDownButton = UIToolkitWrapper.SolButton(
-					"↓",
-					() =>
-					{
-						if (index >= _folders.Count - 1) return;
+			var moveDownButton = Ele.SolButton(
+				_ =>
+				{
+					if (index >= _folders.Count - 1) return;
 
-						(_folders[index], _folders[index + 1]) = (_folders[index + 1], _folders[index]);
-						FolderNavigatorData.Save(_folders);
-						RefreshList();
-					}
-				);
+					(_folders[index], _folders[index + 1]) = (_folders[index + 1], _folders[index]);
+					FolderNavigatorData.Save(_folders);
+					RefreshList();
+				},
+				"↓"
+			);
 
-			var deleteButton = UIToolkitWrapper.SolButton(
-					"✕",
-					() =>
-					{
-						_folders.RemoveAt(index);
-						FolderNavigatorData.Save(_folders);
-						RefreshList();
-					}
-				);
+			var deleteButton = Ele.SolButton(
+				_ =>
+				{
+					_folders.RemoveAt(index);
+					FolderNavigatorData.Save(_folders);
+					RefreshList();
+				},
+				"✕"
+			);
 
-			deleteButton.WithClass(StyleHelper.ClassAccentRed);
+			deleteButton.WithClass(StyleHelper.TextRed);
 
-			return UIToolkitWrapper.SolRow()
-								   .WithChildren(
-											labelField,
-											pathField,
-											moveUpButton,
-											moveDownButton,
-											deleteButton
-										)
-								   .WithStyle(r =>
-											{
-												r.paddingTop = 2;
-												r.paddingBottom = 2;
-											}
-										);
+			return Ele.SolRow()
+					  .WithChildren(
+						   labelField,
+						   pathField,
+						   moveUpButton,
+						   moveDownButton,
+						   deleteButton
+					   )
+					  .WithStyle(r =>
+						   {
+							   r.paddingTop = 2;
+							   r.paddingBottom = 2;
+						   }
+					   );
 		}
 
 		// ── Add row ───────────────────────────────────────────────────────────
 
-		private VisualElement BuildAddRow() {
+		private VisualElement BuildAddRow()
+		{
 			var labelField = MakeTextField("Label", 100);
 			var pathField = MakeTextField("Assets/...", grow: true);
 
 			pathField.RegisterCallback<DragUpdatedEvent>(_ => DragAndDrop.visualMode = DragAndDropVisualMode.Generic);
 
 			pathField.RegisterCallback<DragPerformEvent>(_ =>
+				{
+					if (DragAndDrop.paths.Length > 0)
 					{
-						if (DragAndDrop.paths.Length > 0)
-						{
-							pathField.value = DragAndDrop.paths[0];
-							pathField.RemoveFromClassList(StyleHelper.ClassTextSecondary);
-							pathField.AddToClassList(StyleHelper.ClassTextBody);
-						}
-					}
-				);
+						pathField.value = DragAndDrop.paths[0];
 
-			var addButton = UIToolkitWrapper.SolPrimaryButton(
-					"Add Folder",
-					() =>
+						pathField.RemoveFromClassList(StyleHelper.TextBase01);
+						pathField.RemoveFromClassList(StyleHelper.TextSm);
+						pathField.AddToClassList(StyleHelper.TextBase1);
+					}
+				}
+			);
+
+			var addButton = Ele.SolButton(
+				_ =>
+				{
+					// Treat the placeholder value as empty
+					var label = labelField.value == "Label" ? string.Empty : labelField.value;
+					var path = pathField.value == "Assets/..." ? string.Empty : pathField.value;
+
+					if (string.IsNullOrWhiteSpace(label)
+						|| string.IsNullOrWhiteSpace(path))
 					{
-						// Treat the placeholder value as empty
-						var label = labelField.value == "Label" ? string.Empty : labelField.value;
-						var path = pathField.value == "Assets/..." ? string.Empty : pathField.value;
+						Debug.LogWarning("FolderNavigator: Label and Path must both be filled in");
 
-						if (string.IsNullOrWhiteSpace(label)
-							|| string.IsNullOrWhiteSpace(path))
-						{
-							UnityEngine.Debug.LogWarning("FolderNavigator: Label and Path must both be filled in");
-
-							return;
-						}
-
-						_folders.Add(
-								new FolderEntry
-								{
-									Label = label,
-									Path = path,
-								}
-							);
-
-						FolderNavigatorData.Save(_folders);
-
-						// Reset both fields back to placeholder state
-						labelField.value = "Label";
-						labelField.RemoveFromClassList(StyleHelper.ClassTextBody);
-						labelField.AddToClassList(StyleHelper.ClassTextSecondary);
-
-						pathField.value = "Assets/...";
-						pathField.RemoveFromClassList(StyleHelper.ClassTextBody);
-						pathField.AddToClassList(StyleHelper.ClassTextSecondary);
-
-						RefreshList();
+						return;
 					}
-				);
+
+					_folders.Add(
+						new FolderEntry
+						{
+							Label = label,
+							Path = path,
+						}
+					);
+
+					FolderNavigatorData.Save(_folders);
+
+					// Reset both fields back to placeholder state
+					labelField.value = "Label";
+					labelField.RemoveFromClassList(StyleHelper.TextBase1);
+					labelField.AddToClassList(StyleHelper.TextBase01);
+					labelField.AddToClassList(StyleHelper.TextSm);
+
+					pathField.value = "Assets/...";
+					pathField.RemoveFromClassList(StyleHelper.TextBase1);
+					pathField.AddToClassList(StyleHelper.TextBase01);
+					pathField.AddToClassList(StyleHelper.TextSm);
+
+					RefreshList();
+				},
+				"Add Folder"
+			);
 
 			addButton.style.width = 80;
 			addButton.style.flexShrink = 0;
 
-			var container = UIToolkitWrapper.SolCard();
+			var container = Ele.SolCard();
 			container.style.marginTop = 8;
-			container.Add(UIToolkitWrapper.SolLabel("Add Folder", true));
+			container.Add(Ele.SolLabel("Add Folder"));
 
 			container.Add(
-					UIToolkitWrapper.SolRow()
-									.WithChildren(labelField, pathField, addButton)
-									.WithStyle(r =>
-											 {
-												 r.marginTop = 4;
-												 r.overflow = Overflow.Hidden;
-											 }
-										 )
-				);
+				Ele.SolRow()
+				   .WithChildren(labelField, pathField, addButton)
+				   .WithStyle(r =>
+						{
+							r.marginTop = 4;
+							r.overflow = Overflow.Hidden;
+						}
+					)
+			);
 
 			return container;
 		}
 		// ── Helpers ───────────────────────────────────────────────────────────
 
-		private void ToggleEditMode() {
+		private void ToggleEditMode()
+		{
 			_editMode = !_editMode;
 			RefreshList();
 
@@ -352,10 +360,11 @@ namespace Rev.Helpers.Editor.Tools.FolderNav
 			CreateGUI();
 		}
 
-		private static void PingFolder(string path) {
-			var obj = AssetDatabase.LoadAssetAtPath<Object>(path);
-			EditorGUIUtility.PingObject(obj);
-		}
+		// private static void PingFolder(string path)
+		// {
+		// 	var obj = AssetDatabase.LoadAssetAtPath<Object>(path);
+		// 	EditorGUIUtility.PingObject(obj);
+		// }
 
 		// private static void SelectFolder(string path) {
 		//     var obj = AssetDatabase.LoadAssetAtPath<Object>(path);
@@ -363,49 +372,59 @@ namespace Rev.Helpers.Editor.Tools.FolderNav
 		//     EditorUtility.FocusProjectWindow();
 		// }
 
-		private static TextField MakeTextField(string placeholder, float width = -1, bool grow = false) {
-			var field = new TextField();
-			field.style.flexGrow = grow ? 1 : 0;
-			field.style.flexShrink = grow ? 1 : 0;
-			field.style.minWidth = 0;
+		private static TextField MakeTextField(string placeholder, float width = -1, bool grow = false)
+		{
+			var field = new TextField
+			{
+				style =
+				{
+					flexGrow = grow ? 1 : 0,
+					flexShrink = grow ? 1 : 0,
+					minWidth = 0,
+				},
+			};
 
 			if (width > 0) field.style.width = width;
 
 			// Placeholder simulation
 			field.value = placeholder;
-			field.AddToClassList(StyleHelper.ClassTextSecondary);
+			field.AddToClassList(StyleHelper.TextBase01);
+			field.AddToClassList(StyleHelper.TextSm);
 
 			field.RegisterCallback<FocusInEvent>(_ =>
+				{
+					if (field.value == placeholder)
 					{
-						if (field.value == placeholder)
-						{
-							field.value = string.Empty;
-							field.RemoveFromClassList(StyleHelper.ClassTextSecondary);
-							field.AddToClassList(StyleHelper.ClassTextBody);
-						}
+						field.value = string.Empty;
+						field.RemoveFromClassList(StyleHelper.TextBase01);
+						field.RemoveFromClassList(StyleHelper.TextSm);
+						field.AddToClassList(StyleHelper.TextBase1);
 					}
-				);
+				}
+			);
 
 			field.RegisterCallback<FocusOutEvent>(_ =>
+				{
+					if (string.IsNullOrWhiteSpace(field.value))
 					{
-						if (string.IsNullOrWhiteSpace(field.value))
-						{
-							field.value = placeholder;
-							field.RemoveFromClassList(StyleHelper.ClassTextBody);
-							field.AddToClassList(StyleHelper.ClassTextSecondary);
-						}
+						field.value = placeholder;
+						field.RemoveFromClassList(StyleHelper.TextBase1);
+						field.AddToClassList(StyleHelper.TextBase01);
+						field.AddToClassList(StyleHelper.TextSm);
 					}
-				);
+				}
+			);
 
 			return field;
 		}
 
-		private static void SelectFolder(string path) {
+		private static void SelectFolder(string path)
+		{
 			var obj = AssetDatabase.LoadAssetAtPath<Object>(path);
 
 			if (obj == null)
 			{
-				UnityEngine.Debug.LogWarning($"FolderNavigator: Could not load folder at '{path}'");
+				Debug.LogWarning($"FolderNavigator: Could not load folder at '{path}'");
 
 				return;
 			}
@@ -421,26 +440,24 @@ namespace Rev.Helpers.Editor.Tools.FolderNav
 
 				var showFolderContents = focused.GetType()
 												.GetMethod(
-														 "ShowFolderContents",
-														 System.Reflection.BindingFlags.NonPublic
-														 | System.Reflection.BindingFlags.Instance
-													 );
+													 "ShowFolderContents",
+													 BindingFlags.NonPublic | BindingFlags.Instance
+												 );
 
 				if (showFolderContents != null)
 					showFolderContents.Invoke(
-							focused,
-							new object[]
-							{
-								obj.GetInstanceID(),
-								true,
-							}
-						);
+						focused,
+						new object[]
+						{
+							obj.GetInstanceID(),
+							true,
+						}
+					);
 				else
-					UnityEngine.Debug.LogWarning(
-							"FolderNavigator: Could not find ShowFolderContents — Unity may have changed internals"
-						);
+					Debug.LogWarning(
+						"FolderNavigator: Could not find ShowFolderContents — Unity may have changed internals"
+					);
 			};
 		}
-
 	}
 }
